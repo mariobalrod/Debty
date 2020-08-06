@@ -2,74 +2,105 @@ import React from 'react';
 import * as firebase from 'firebase';
 
 // Components
-import { Col, Row } from 'react-bootstrap';
-import Input from '../components/Input';
-import Button from '../components/Button';
+import Column from '../components/Column';
+import Row from '../components/Row';
+import CardType from '../components/CardType';
+import Total from '../components/Total';
+import DateComponent from '../components/Date';
+
+// Container
+import DebtsList from './DebtsList';
+import FormDebt from './FormDebt';
+
+// Utils
+import { createDebt, fetchAllDebts } from '../utils/debtsActions';
 
 // Firebase Config
-import { firebaseConfig } from '../firebaseConfig';
+import { firebaseConfig } from '../firebase/config';
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
+const App = () => {
 
-export default function App () {
+  const MONTH_NAMES = {
+    1: "JANUARY",
+    2: "FEBRUARY",
+    3: "MARCH",
+    4: "APRIL",
+    5: "MAY",
+    6: "JUNE",
+    7: "JULY",
+    8: "AUGUST",
+    9: "SEPTEMBER",
+    10: "OCTOBER",
+    11: "NOVEMBER",
+    12: "DECEMBER",
+  };
 
-  const [ state, setState ] = React.useState({
-    description: '',
-    value: ''
-  });
+  const [ debts, setDebts ] = React.useState([]);
+  const [dateTime, setDateTime] = React.useState(new Date());
+  
+  React.useEffect(() => {
+    setData(); 
 
-  /* React.useEffect(() => {
-    const nameRef = firebase.database().ref().child("name");
-    nameRef.on("value", (snapshot) => {
-      setData(snapshot.val());
-    });
+    const id = setInterval(() => setDateTime(new Date()), 1000);
+    return () => {
+      clearInterval(id);
+    };
   }, []);
 
-  const setData = (data) => {
-    setPrueba(data);
-  } */
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(state);
-  };
+  const setData = async () => {
+    const data = await fetchAllDebts();
+    setDebts(data)
+  }
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setState({
-      ...state,
-      [e.target.name]: value,
-    });
-  };
+  const addDebt = async (state) => {
+    if( state.description && state.value ){
+      createDebt(state);
+      const data = await fetchAllDebts();
+      setDebts(data)
+    }
+  }
 
   return (
-    <Col className="App" style={{width: "100%"}}>
-      <Row className="rows" id="row1">
-        <h1>Row 1</h1>
+    <Column className="mx-auto">
+      <Row>
+        <DateComponent>{`${MONTH_NAMES[dateTime.getMonth()]} ${dateTime.getFullYear()}`}</DateComponent>
       </Row>
 
-      <Row className="rows" id="row2">
-        <h1>Row 2</h1>
+      <Row>
+        <h5>{dateTime.toLocaleTimeString()}</h5>
       </Row>
 
-      <Row className="rows" id="row3">
-        <h1>Row 3</h1>
+      <Row>
+        <Total>0 $</Total>
       </Row>
 
-      <Row className="rows" id="row4">
-        <form onSubmit={handleSubmit} id="responsiveForm" className="rows">
-          <Input name="description" placeholder="Desciption" type="text" inputSize="300" onChange={handleChange} value={state.description} />
-          <Input name="value" placeholder="Value" type="number" inputSize="100" onChange={handleChange} value={state.value} />
-          <Button type="submit" block>Save</Button>
-        </form>
+      <Row>
+        <CardType colorText="478744">
+          Incomes
+          <br/>
+          + 1000 $
+        </CardType>
+        <CardType colorText="D65555">
+          Expenses
+          <br/>
+          - 1000 $
+        </CardType>
       </Row>
 
-      <Row className="rows" id="row5">
-        <h1>Row 5</h1>
+      <Row>
+        <FormDebt addDebt={addDebt} />
       </Row>
-    </Col>
+
+      <Row>
+        <DebtsList debts={debts}/>
+      </Row>
+    </Column>
   );
 }
+
+export default App;
