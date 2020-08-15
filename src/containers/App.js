@@ -13,7 +13,7 @@ import DebtsList from './DebtsList';
 import FormDebt from './FormDebt';
 
 // Utils
-import { createDebt, fetchAllDebts } from '../utils/debtsActions';
+import { createDebt, deleteDebt } from '../utils/debtsActions';
 
 // Firebase Config
 import { firebaseConfig } from '../firebase/config';
@@ -40,10 +40,19 @@ const App = () => {
   };
 
   const [ debts, setDebts ] = React.useState([]);
-  const [dateTime, setDateTime] = React.useState(new Date());
+  const [ dateTime, setDateTime ] = React.useState(new Date());
   
   React.useEffect(() => {
-    setData(); 
+    const debtsRef = firebase.database().ref('/debts');
+    debtsRef.on('value', (snapshot) => {
+      const debts = snapshot.val();
+      const debtsList = [];
+      for (let id in debts) {
+        debtsList.push({ id, ...debts[id] });
+      }
+      console.log('Lista', debtsList)
+      setDebts(debtsList);
+    }); 
 
     const id = setInterval(() => setDateTime(new Date()), 1000);
     return () => {
@@ -51,18 +60,14 @@ const App = () => {
     };
   }, []);
 
-
-  const setData = async () => {
-    const data = await fetchAllDebts();
-    setDebts(data)
-  }
-
   const addDebt = async (state) => {
     if( state.description && state.value ){
-      createDebt(state);
-      const data = await fetchAllDebts();
-      setDebts(data)
+      await createDebt(state);
     }
+  }
+
+  const removeDebt = async (id) => {
+    await deleteDebt(id);
   }
 
   return (
@@ -97,7 +102,7 @@ const App = () => {
       </Row>
 
       <Row>
-        <DebtsList debts={debts}/>
+        <DebtsList debts={debts} removeDebt={removeDebt} />
       </Row>
     </Column>
   );

@@ -17,6 +17,8 @@ const CardType = styled.div`
     line-height: 54px;
     text-align: center;
 
+    margin-top: 10px;
+
     color: ${(props) => "#" + props.colorText || "#fefefe"};
 `;
 

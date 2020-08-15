@@ -7,10 +7,11 @@ import Debt from '../components/Debt';
 export default function DebtsList ( props ) {
 
     return (
-        <Container className="mx-auto mt-3" fluid="md">
+        <Container className="mx-auto mt-3 mb-5" fluid="md">
             {
                 props.debts.map( (debt, i) => {
-                    return (<Debt key={i} debt={debt} className="panel" />)
+                    console.log(debt)
+                    return (<Debt key={i} debt={debt} removeDebt={props.removeDebt} />)
                 })
             }
         </Container>
