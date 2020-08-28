@@ -10,7 +10,6 @@ const Container = styled.div`
     padding: 15px;
     margin-top: 25px;
 
-    color: ${(props) => props.colorText || "white"};
     border: 0;
     outline: 0;
     background: transparent;
@@ -29,6 +28,7 @@ const Content = styled.div`
     display: flex;
     flex-direction: row;
     padding: 0px;
+    
 
     position: relative;
     height: auto;
@@ -38,6 +38,8 @@ const Description = styled.div`
     display: flex;
     padding: 0px;
     width: 60%;
+
+    color: ${(props) => "#" + props.colorText || "#fefefe"};
     
     position: relative;
     height: auto;
@@ -46,6 +48,8 @@ const Description = styled.div`
 const Value = styled.div`
     display: flex;
     padding: 0px;
+
+    color: ${(props) => "#" + props.colorText || "#fefefe"};
     
     position: relative;
     width: 30%;
@@ -61,22 +65,31 @@ const Button = styled.button`
     background: transparent;
     box-sizing: border-box;
     text-decoration: none;
-    color: #fefefe;
     text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
     text-align: center;
 `;
 
 export default function Debt (props) {
 
-    const { description, value, id } = props.debt;
+    const [ color, setColor ] = React.useState();
+
+    const { description, value, type } = props.debt;
+
+    React.useEffect(() => {
+        if (type) {
+            setColor('62c15d');
+        } else {
+            setColor('d65555');
+        }
+    }, [type]);
 
     return (
         <Container>
             <Content>
-                <Description>{description}</Description>
-                <Value>{value}</Value>
-                <Button onClick={props.removeDebt.bind(this, id)}>
-                    <ClearIcon />
+                <Description colorText={color}>{description}</Description>
+                <Value colorText={color}>{value}</Value>
+                <Button  colorText={color} onClick={props.removeDebt.bind(this, props.debt)}>
+                    <ClearIcon/>
                 </Button>
             </Content>
         </Container>

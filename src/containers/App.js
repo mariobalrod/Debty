@@ -7,6 +7,7 @@ import Row from '../components/Row';
 import CardType from '../components/CardType';
 import Total from '../components/Total';
 import DateComponent from '../components/Date';
+import OptionCheck from '../components/OptionCheck';
 
 // Container
 import DebtsList from './DebtsList';
@@ -41,6 +42,7 @@ const App = () => {
 
   const [ debts, setDebts ] = React.useState([]);
   const [ dateTime, setDateTime ] = React.useState(new Date());
+  const [ check, setCheck ] = React.useState(true);
   
   React.useEffect(() => {
     const debtsRef = firebase.database().ref('/debts');
@@ -50,7 +52,6 @@ const App = () => {
       for (let id in debts) {
         debtsList.push({ id, ...debts[id] });
       }
-      console.log('Lista', debtsList)
       setDebts(debtsList);
     }); 
 
@@ -62,12 +63,16 @@ const App = () => {
 
   const addDebt = async (state) => {
     if( state.description && state.value ){
-      await createDebt(state);
+      await createDebt(state, check);
     }
   }
 
-  const removeDebt = async (id) => {
-    await deleteDebt(id);
+  const removeDebt = async (debt) => {
+    await deleteDebt(debt);
+  }
+
+  const handleChangeCheck = () => {
+    setCheck(!check);
   }
 
   return (
@@ -85,16 +90,9 @@ const App = () => {
       </Row>
 
       <Row>
-        <CardType colorText="478744">
-          Incomes
-          <br/>
-          + 1000 $
-        </CardType>
-        <CardType colorText="D65555">
-          Expenses
-          <br/>
-          - 1000 $
-        </CardType>
+        <CardType colorText="478744">Incomes<br/>+ 1000 $</CardType>
+        <OptionCheck handleChangeCheck={handleChangeCheck} />
+        <CardType colorText="D65555">Expenses<br/>- 1000 $</CardType>
       </Row>
 
       <Row>

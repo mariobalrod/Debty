@@ -15,3 +15,22 @@
     background-color: #30303d;
     color: #fefefe;
 }
+
+
+/*
+    SLIDER BUTTON CHECK OPTION
+*/
+
+.inputCheck:checked + .slider {
+    background-color: #d65555;
+}
+  
+.inputCheck:focus + .slider {
+    box-shadow: 0 0 1px #d65555;
+}
+  
+.inputCheck:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}

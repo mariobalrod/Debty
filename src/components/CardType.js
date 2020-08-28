@@ -1,12 +1,12 @@
 import styled from "styled-components";
 
 const CardType = styled.div`
+    position: relative;
     background: #202028;
     border-radius: 20px;
     width: 350px;
     height: 250px;
     flex: none;
-    order: 1;
     align-self: center;
 
     padding-top: 60px;
